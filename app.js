@@ -147,7 +147,9 @@ function handler(request, response) {
         var emailPattern = new RegExp('[a-zA-Z][\w\.-]*[a-zA-Z0-9]@([a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])');
         if(emailPattern.test(qs.parse(data.toString()).email))
         {
-          client.query("INSERT INTO meetings(name, email) values($1, $2)", [meeting, qs.parse(data.toString()).email]);
+          pg.connect(conString, function(err, client) {
+            client.query("INSERT INTO meetings(name, email) values($1, $2)", [meeting, qs.parse(data.toString()).email]);
+          }
           io.sockets.emit('meeting', { email: qs.parse(data.toString()).email });
         }
         else
