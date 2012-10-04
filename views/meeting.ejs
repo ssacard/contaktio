@@ -1,0 +1,62 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <% if (meetings.length) { %>
+      <ul>
+        <% meetings.forEach(function(meeting){ %>
+          <li><%= meeting['email'] %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <form method="post" action="/<%= meetings[0]['name'] %>" enctype="application/x-www-form-urlencoded" id="meetingForm">
+      <p id="msg"></p>
+      <input type="text" placeholder="your email..." name="email" id="email" />
+      <button type="submit">Submit</button>
+    </form>
+
+    <a href="/<%= meetings[0]['name'] %>/send">Send all</a>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://127.0.0.1:1234');
+      socket.on('meeting', function (data) {
+        console.log(data);
+        $("ul").append('<li>'+data.email+'</li>');
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('#meetingForm').on('submit', function() {
+            var email = $('#email').val();
+
+            if(email == '') {
+                alert('Les champs doivent êtres remplis');
+            } else {
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: $(this).serialize(),
+                    success: function(content){
+                      if(content.error != undefined)
+                      {
+                        $('#msg').html(content.error.data);
+                      }
+                      else
+                      {
+                        $('#msg').html('');
+                      }
+                    },
+                    error: function(error){
+                    }
+                });
+            }
+            return false;
+        });
+      });
+    </script>
+
+  </body>
+</html>

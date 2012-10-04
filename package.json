@@ -1,0 +1,14 @@
+{
+  "name": "contakt",
+  "version": "0.0.1",
+  "dependencies": {
+  	"pg": "0.6.15",
+  	"ejs": "0.8.3",
+    "socket.io": "*",
+    "nodemailer": "*"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}

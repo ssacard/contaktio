@@ -1,0 +1,13 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <% if (meetings.length) { %>
+      <ul>
+        <% meetings.forEach(function(meeting){ %>
+          <li><%= meeting['email'] %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </body>
+</html>
