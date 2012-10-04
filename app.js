@@ -5,7 +5,8 @@ var app = require('http').createServer(handler)
   , pg = require('pg')
   , qs = require('querystring')
   , ejs = require('ejs')
-  , nodemailer = require("nodemailer");
+  , nodemailer = require("nodemailer")
+  , path = require('path');
 
 var port = process.env.PORT || 5000;
 
@@ -47,14 +48,53 @@ function renderEmailError(request, response, json){
 
 
 function handler(request, response) {
-  var pathname = url.parse(request.url).pathname;
+  var filePath = request.url;
+  var extname = path.extname(filePath);
+
+  console.log('extname '+extname);
+
+  if(extname == '.js' || extname == '.css') {
+    var contentType = '';
+    switch (extname) {
+      case '.js':
+        console.log('js');
+        contentType = 'text/javascript';
+        break;
+      case '.css':
+        console.log('css');
+        contentType = 'text/css';
+        break;
+    }
+    
+    path.exists('public'+filePath, function(exists) {
+        if (exists) {
+          console.log('public'+filePath+' exists');
+            fs.readFile('public/'+filePath, function(error, content) {
+                if (error) {
+                    response.writeHead(500);
+                    response.end();
+                }
+                else {
+                  console.log(contentType);
+                    response.writeHead(200, { 'Content-Type': contentType });
+                    response.end(content, 'utf-8');
+                }
+            });
+        }
+        else {
+            response.writeHead(404);
+            response.end();
+        }
+    });
+  }
+
+  var pathname = url.parse(filePath).pathname;
   var meeting = pathname.split('/')[1];
   var sendMailRegex = new RegExp('^/'+meeting+'/send');
   var content = new Array;
 
-  console.log(meeting);
-  console.log(conString);
-
+  //console.log(meeting);
+  //console.log(conString);
 
   // user try /meeting/send
   if(sendMailRegex.test(pathname))
@@ -124,16 +164,11 @@ function handler(request, response) {
     }
     // END POST ACTION
 
-    console.log('query');
-
     pg.connect(conString, function(err, client) {
       // Query meeting + display all emails
-      console.log('query in');
-      console.log(err);
       var query = client.query("SELECT * FROM meetings WHERE name = $1", [meeting]);
       query.on('row', function(row) {
         content.push(row);
-        console.log('query push');
       });
       query.on('end', function() {
         if(content.length == 0)
@@ -142,10 +177,10 @@ function handler(request, response) {
         renderMeetingHTML(request, response, content);
       });
     });
-
     // END Query meeting + display all emails
-
   }
+
+  
 }
 
 console.log('Server running at http://127.0.0.1:'+port);

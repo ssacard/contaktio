@@ -1,62 +1,75 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
+
   <body>
-    <% if (meetings.length) { %>
-      <ul>
-        <% meetings.forEach(function(meeting){ %>
-          <li><%= meeting['email'] %></li>
-        <% }) %>
-      </ul>
-    <% } %>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span12">
 
-    <form method="post" action="/<%= meetings[0]['name'] %>" enctype="application/x-www-form-urlencoded" id="meetingForm">
-      <p id="msg"></p>
-      <input type="text" placeholder="your email..." name="email" id="email" />
-      <button type="submit">Submit</button>
-    </form>
+          <div class="page-header">
+            <h1>Meeting <%= meetings[0]['name'] %></h1>
+          </div>
 
-    <a href="/<%= meetings[0]['name'] %>/send">Send all</a>
+          <div class="well">
+            <% if (meetings.length) { %>
+              <ul>
+                <% meetings.forEach(function(meeting){ %>
+                  <li><%= meeting['email'] %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+          </div>
+          
+          <form method="post" action="/<%= meetings[0]['name'] %>" 
+            enctype="application/x-www-form-urlencoded" id="meetingForm" class="form-inline">
+            <legend>Add your email</legend>
+            <p id="msg"></p>
+            <input type="text" placeholder="your email..." name="email" id="email" />
+            <button type="submit" class="btn">Submit</button>
+          </form>
+
+          <div class="form-actions">
+            <a class="btn btn-primary btn-large" href="/<%= meetings[0]['name'] %>/send">Send all</a>
+          </div>
+
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2012</p>
+      </footer>
+    </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io.connect('http://127.0.0.1:1234');
-      socket.on('meeting', function (data) {
-        console.log(data);
-        $("ul").append('<li>'+data.email+'</li>');
-      });
-    </script>
-    <script>
-      $(document).ready(function() {
-        $('#meetingForm').on('submit', function() {
-            var email = $('#email').val();
-
-            if(email == '') {
-                alert('Les champs doivent êtres remplis');
-            } else {
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-                    data: $(this).serialize(),
-                    success: function(content){
-                      if(content.error != undefined)
-                      {
-                        $('#msg').html(content.error.data);
-                      }
-                      else
-                      {
-                        $('#msg').html('');
-                      }
-                    },
-                    error: function(error){
-                    }
-                });
-            }
-            return false;
-        });
-      });
-    </script>
-
+    <script src="js/main.js"></script>
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
+  
