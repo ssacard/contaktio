@@ -99,37 +99,42 @@ function handler(request, response) {
   if(sendMailRegex.test(pathname))
   {
     // select * from meetings
-    var query = client.query("SELECT * FROM meetings WHERE name = $1", [meeting]);
-    query.on('row', function(row) {
-      content.push(row);
-    });
-    query.on('end', function() {
-      if(content.length == 0)
-        return;
+    pg.connect(conString, function(err, client) {
+      var to = new Array;
 
-      // Send email
-      nodemailer.sendMail({
-        transport: transport,
-        from: 'hello@contakt.io',
-        to: 'jonathanmoreaufr',
-        subject: 'Welcome Contakt.io',
-        html: ejs.render(mailHTML, { meetings: content })
-      }, function(error){
-        if(error)
-        {
-          console.log(error);
-        }
-        else
-        {
-          console.log("Message sent!");
-        }
-        transport.close();
+      var query = client.query("SELECT * FROM meetings WHERE name = $1", [meeting]);
+      query.on('row', function(row) {
+        content.push(row);
+        to.push(row.email);
       });
+      query.on('end', function() {
+        if(content.length == 0)
+          return;
 
-      // redirect to meeting page
-      response.writeHead(302, {'Location': '/'+meeting});
-      response.end();
-    }); 
+        // Send email
+        nodemailer.sendMail({
+          transport: transport,
+          from: 'hello@contakt.io',
+          bcc: to.join(),
+          subject: 'Welcome Contakt.io',
+          html: ejs.render(mailHTML, { meetings: content })
+        }, function(error){
+          if(error)
+          {
+            console.log(error);
+          }
+          else
+          {
+            console.log("Message sent!");
+          }
+          transport.close();
+        });
+
+        // redirect to meeting page
+        response.writeHead(302, {'Location': '/'+meeting});
+        response.end();
+      });
+    });
   }
   else
   {
