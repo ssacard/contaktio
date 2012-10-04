@@ -20,11 +20,11 @@
               success: function(content){
                 if(content.error != undefined)
                 {
-                  $('#msg').html(content.error.data);
+                  $('#error').html(content.error.data);
                 }
                 else
                 {
-                  $('#msg').html('');
+                  $('#error').html('');
                 }
               },
               error: function(error){

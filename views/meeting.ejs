@@ -8,15 +8,6 @@
     <meta name="author" content="">
 
     <link href="css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -26,12 +17,20 @@
   </head>
 
   <body>
+    <div class="navbar navbar-static-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">Contakt.io</a>
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="span12">
 
           <div class="page-header">
-            <h1>Meeting <%= meetings[0]['name'] %></h1>
+            <h1>Meeting <%= meetings[0]['name'] %>. <small>Contakt email list</small></h1>
           </div>
 
           <div class="well">
@@ -47,7 +46,7 @@
           <form method="post" action="/<%= meetings[0]['name'] %>" 
             enctype="application/x-www-form-urlencoded" id="meetingForm" class="form-inline">
             <legend>Add your email</legend>
-            <p id="msg"></p>
+            <p class="text-error" id="error"></p>
             <input type="text" placeholder="your email..." name="email" id="email" />
             <button type="submit" class="btn">Submit</button>
           </form>
