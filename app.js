@@ -133,4 +133,4 @@ function handler(request, response) {
   }
 }
 
-console.log('Server running at http://127.0.0.1:1234/');
+console.log('Server running at http://127.0.0.1:'+port);
