@@ -25,7 +25,7 @@ var meetingHTML = fs.readFileSync('views/meeting.ejs', 'utf8');
 var mailHTML = fs.readFileSync('views/email.ejs', 'utf8');
 var client = new pg.Client(conString);
 
-client.connect();
+//client.connect();
 
 
 // RENDER function
