@@ -7,7 +7,7 @@ var app = require('http').createServer(handler)
   , ejs = require('ejs')
   , nodemailer = require("nodemailer");
 
-var port = process.env.PORT || 1234;
+var port = process.env.PORT || 5000;
 
 app.listen(port);
 
@@ -23,7 +23,12 @@ var transport = new nodemailer.Transport('SMTP', {
 var conString = process.env.DATABASE_URL || 'tcp://postgres:death0wl@localhost:5432/contakt';
 var meetingHTML = fs.readFileSync('views/meeting.ejs', 'utf8');
 var mailHTML = fs.readFileSync('views/email.ejs', 'utf8');
-var client = new pg.Client(conString);
+
+// assuming io is the Socket.IO server object
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
 
 //client.connect();
 
@@ -46,6 +51,10 @@ function handler(request, response) {
   var meeting = pathname.split('/')[1];
   var sendMailRegex = new RegExp('^/'+meeting+'/send');
   var content = new Array;
+
+  console.log(meeting);
+  console.log(conString);
+
 
   // user try /meeting/send
   if(sendMailRegex.test(pathname))
@@ -85,8 +94,6 @@ function handler(request, response) {
   }
   else
   {
-    console.log(meeting);
-
     // POST Action
     if (request.method == 'POST') {
       console.log("[200] " + request.method + " to " + request.url);
@@ -117,17 +124,25 @@ function handler(request, response) {
     }
     // END POST ACTION
 
-    // Query meeting + display all emails
-    var query = client.query("SELECT * FROM meetings WHERE name = $1", [meeting]);
-    query.on('row', function(row) {
-      content.push(row);
-    });
-    query.on('end', function() {
-      if(content.length == 0)
-        content.push({name: meeting, email: 'hello@iterate.fr'});
+    console.log('query');
 
-      renderMeetingHTML(request, response, content);
+    pg.connect(conString, function(err, client) {
+      // Query meeting + display all emails
+      console.log('query in');
+      console.log(err);
+      var query = client.query("SELECT * FROM meetings WHERE name = $1", [meeting]);
+      query.on('row', function(row) {
+        content.push(row);
+        console.log('query push');
+      });
+      query.on('end', function() {
+        if(content.length == 0)
+          content.push({name: meeting, email: 'hello@iterate.fr'});
+
+        renderMeetingHTML(request, response, content);
+      });
     });
+
     // END Query meeting + display all emails
 
   }
