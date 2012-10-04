@@ -20,7 +20,7 @@ var transport = new nodemailer.Transport('SMTP', {
     }
 });
 
-var conString = "tcp://postgres:death0wl@localhost:5432/contakt";
+var conString = process.env.DATABASE_URL || 'tcp://postgres:death0wl@localhost:5432/contakt';
 var meetingHTML = fs.readFileSync('views/meeting.ejs', 'utf8');
 var mailHTML = fs.readFileSync('views/email.ejs', 'utf8');
 var client = new pg.Client(conString);
