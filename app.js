@@ -149,7 +149,7 @@ function handler(request, response) {
         {
           pg.connect(conString, function(err, client) {
             client.query("INSERT INTO meetings(name, email) values($1, $2)", [meeting, qs.parse(data.toString()).email]);
-          }
+          });
           io.sockets.emit('meeting', { email: qs.parse(data.toString()).email });
         }
         else
