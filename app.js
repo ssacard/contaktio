@@ -31,8 +31,7 @@ io.configure(function () {
   io.set("polling duration", 10); 
 });
 
-//client.connect();
-
+client.connect();
 
 // RENDER function
 function renderMeetingHTML(request, response, _meetings){
